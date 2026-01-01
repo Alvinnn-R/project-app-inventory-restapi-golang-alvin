@@ -40,6 +40,6 @@ func main() {
 
 	fmt.Println("server running on port " + config.Port)
 	if err := http.ListenAndServe(":"+config.Port, r); err != nil {
-		log.Fatal("error server")
+		log.Fatal("error server: ", err)
 	}
 }

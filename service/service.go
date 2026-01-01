@@ -8,6 +8,9 @@ type Service struct {
 	UserService       UserService
 	AuthService       AuthService
 	PermissionService PermissionIface
+	ItemService       ItemService
+	CategoryService   CategoryService
+	RackService       RackService
 }
 
 func NewService(repo repository.Repository) Service {
@@ -17,5 +20,8 @@ func NewService(repo repository.Repository) Service {
 		UserService:       NewUserService(repo),
 		AuthService:       NewAuthService(repo),
 		PermissionService: NewPermissionService(repo),
+		ItemService:       NewItemService(repo),
+		CategoryService:   NewCategoryService(repo),
+		RackService:       NewRackService(repo),
 	}
 }

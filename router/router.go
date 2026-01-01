@@ -52,6 +52,39 @@ func Apiv1(handler handler.Handler, mw mCostume.MiddlewareCostume) *chi.Mux {
 		// Logout endpoint
 		r.Post("/logout", handler.HandlerAuth.Logout)
 
+		// Items routes - CRUD for inventory items
+		r.Route("/items", func(r chi.Router) {
+			r.Get("/", handler.ItemHandler.List)
+			r.Post("/", handler.ItemHandler.Create)
+			r.Route("/{item_id}", func(r chi.Router) {
+				r.Get("/", handler.ItemHandler.GetByID)
+				r.Put("/", handler.ItemHandler.Update)
+				r.Delete("/", handler.ItemHandler.Delete)
+			})
+		})
+
+		// Categories routes - CRUD for item categories
+		r.Route("/categories", func(r chi.Router) {
+			r.Get("/", handler.CategoryHandler.List)
+			r.Post("/", handler.CategoryHandler.Create)
+			r.Route("/{category_id}", func(r chi.Router) {
+				r.Get("/", handler.CategoryHandler.GetByID)
+				r.Put("/", handler.CategoryHandler.Update)
+				r.Delete("/", handler.CategoryHandler.Delete)
+			})
+		})
+
+		// Racks routes - CRUD for storage racks
+		r.Route("/racks", func(r chi.Router) {
+			r.Get("/", handler.RackHandler.List) // supports ?warehouse_id=X filter
+			r.Post("/", handler.RackHandler.Create)
+			r.Route("/{rack_id}", func(r chi.Router) {
+				r.Get("/", handler.RackHandler.GetByID)
+				r.Put("/", handler.RackHandler.Update)
+				r.Delete("/", handler.RackHandler.Delete)
+			})
+		})
+
 		// Assignment routes (example - will be replaced with inventory routes later)
 		r.Route("/assignment", func(r chi.Router) {
 			r.Get("/", handler.AssignmentHandler.List)

@@ -12,6 +12,9 @@ type Repository struct {
 	UserRepo             UserRepository
 	SessionRepo          SessionRepository
 	PermissionRepository PermissionIface
+	ItemRepo             ItemRepository
+	CategoryRepo         CategoryRepository
+	RackRepo             RackRepository
 }
 
 func NewRepository(db database.PgxIface, log *zap.Logger) Repository {
@@ -21,5 +24,8 @@ func NewRepository(db database.PgxIface, log *zap.Logger) Repository {
 		UserRepo:             NewUserRepository(db),
 		SessionRepo:          NewSessionRepository(db),
 		PermissionRepository: NewPermissionRepository(db),
+		ItemRepo:             NewItemRepository(db, log),
+		CategoryRepo:         NewCategoryRepository(db, log),
+		RackRepo:             NewRackRepository(db, log),
 	}
 }
