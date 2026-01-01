@@ -1,0 +1,5 @@
+{"L":"INFO","timestamp":"2025-12-19T15:07:06.049+0700","C":"middleware/logging.go:19","M":"Activity route","Method":"GET","URL":"/api/v1/assignment/1","Duration":"8.095701ms"}
+2025-12-19T15:09:00.683+0700	INFO	middleware/logging.go:19	Activity route	{"Method": "GET", "URL": "/api/v1/assignment/1", "Duration": "6.845659ms"}
+2025-12-19T15:11:32.798+0700	INFO	middleware/logging.go:19	Activity route	{"Method": "GET", "URL": "/api/v1/assignment/1", "Duration": "12.202265ms"}
+{"level":"info","timestamp":"2025-12-19T15:11:48.211+0700","caller":"middleware/logging.go:19","msg":"Activity route","Method":"GET","URL":"/api/v1/assignment/1","Duration":0.008746015}
+2025-12-19T15:14:22.700+0700	INFO	middleware/logging.go:19	Activity route	{"Method": "GET", "URL": "/api/v1/assignment/1", "Duration": "5.086973ms"}

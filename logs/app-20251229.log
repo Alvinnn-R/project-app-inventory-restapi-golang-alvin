@@ -1,0 +1,6 @@
+2025-12-29T15:44:57.723+0700	INFO	middleware/logging.go:19	Activity route	{"Method": "POST", "URL": "/api/v1/login", "Duration": "70.772118ms"}
+2025-12-29T15:46:48.768+0700	INFO	middleware/logging.go:19	Activity route	{"Method": "POST", "URL": "/api/v1/login", "Duration": "66.433081ms"}
+2025-12-29T15:46:57.173+0700	INFO	middleware/logging.go:19	Activity route	{"Method": "POST", "URL": "/api/v1/login", "Duration": "71.324992ms"}
+2025-12-29T15:58:13.372+0700	INFO	middleware/logging.go:22	Activity route	{"Method": "GET", "URL": "/api/v1/assignment?page=1", "Duration": "115.303762ms"}
+2025-12-29T15:59:53.087+0700	INFO	middleware/logging.go:22	Activity route	{"Method": "GET", "URL": "/api/v1/assignment?page=1", "Duration": "9.695692ms"}
+2025-12-29T16:01:29.011+0700	INFO	middleware/logging.go:22	Activity route	{"Method": "GET", "URL": "/api/v1/assignment?page=1", "Duration": "13.402296ms"}
