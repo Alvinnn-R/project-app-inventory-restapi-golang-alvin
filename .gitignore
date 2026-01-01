@@ -1,3 +1,4 @@
 REQUIREMENTS.md
 *.log
 generate_hash.go
+.gitignore
