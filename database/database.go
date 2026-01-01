@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.uber.org/zap"
 )
 
 type PgxIface interface {
@@ -17,13 +18,18 @@ type PgxIface interface {
 	Exec(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error)
 }
 
-func InitDB(config utils.DatabaseCofig) (*pgxpool.Pool, error) {
+type TxManager interface {
+	Begin(ctx context.Context) (pgx.Tx, error)
+}
+
+func InitDB(log *zap.Logger, config utils.DatabaseCofig) (*pgxpool.Pool, error) {
 	// connStr := "user=postgres password=postgres dbname=assignment_with_role sslmode=disable host=192.168.1.12"
 	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable host=%s",
 		config.Username, config.Password, config.Name, config.Host)
 
 	cfg, err := pgxpool.ParseConfig(connStr)
 	if err != nil {
+		log.Error("cant parse db config", zap.Error(err))
 		return nil, fmt.Errorf("parse config: %w", err)
 	}
 
@@ -39,6 +45,7 @@ func InitDB(config utils.DatabaseCofig) (*pgxpool.Pool, error) {
 
 	pool, err := pgxpool.NewWithConfig(context.Background(), cfg)
 	if err != nil {
+		log.Error("cant create db pool", zap.Error(err))
 		return nil, fmt.Errorf("create pool: %w", err)
 	}
 
@@ -46,9 +53,11 @@ func InitDB(config utils.DatabaseCofig) (*pgxpool.Pool, error) {
 	pingCtx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	if err := pool.Ping(pingCtx); err != nil {
+		log.Error("cant ping to db", zap.Error(err))
 		pool.Close()
 		return nil, fmt.Errorf("ping db: %w", err)
 	}
 
+	log.Info("connected to DB", zap.Time("At", time.Now()))
 	return pool, nil
 }

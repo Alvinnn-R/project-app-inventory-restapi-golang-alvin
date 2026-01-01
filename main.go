@@ -18,12 +18,19 @@ func main() {
 		log.Fatal("error file configration")
 	}
 	fmt.Println(config)
-	db, err := database.InitDB(config.DB)
+
+	// Initialize logger FIRST
+	logger, err := utils.InitLogger(config.PathLogging, config.Debug)
+	if err != nil {
+		log.Fatal("error initializing logger: ", err)
+	}
+
+	db, err := database.InitDB(logger, config.DB)
 	if err != nil {
 		panic(err)
 	}
 
-	logger, err := utils.InitLogger(config.PathLogging, config.Debug)
+	// logger, err := utils.InitLogger(config.PathLogging, config.Debug)
 
 	repo := repository.NewRepository(db, logger)
 	service := service.NewService(repo)

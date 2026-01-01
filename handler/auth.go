@@ -6,6 +6,7 @@ import (
 	"project-app-inventory/dto"
 	"project-app-inventory/service"
 	"project-app-inventory/utils"
+	"strings"
 )
 
 type AuthHandler struct {
@@ -28,33 +29,50 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req dto.LoginRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.ResponseBadRequest(w, http.StatusBadRequest, "error data", nil)
+		utils.ResponseBadRequest(w, http.StatusBadRequest, "invalid request data", nil)
 		return
 	}
 
+	// validation
+	messages, err := utils.ValidateErrors(req)
+	if err != nil {
+		utils.ResponseBadRequest(w, http.StatusBadRequest, err.Error(), messages)
+		return
+	}
+
+	// Login
 	result, err := h.AuthService.AuthService.Login(req.Email, req.Password)
 	if err != nil {
-		utils.ResponseBadRequest(w, http.StatusUnauthorized, "email or password failed", nil)
+		utils.ResponseBadRequest(w, http.StatusUnauthorized, err.Error(), nil)
 		return
 	}
 
 	utils.ResponseSuccess(w, http.StatusOK, "login success", result)
 }
 
-// func (h *AuthHandler) LogoutView(w http.ResponseWriter, r *http.Request) {
-// 	if err := h.Templates.ExecuteTemplate(w, "logout", nil); err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 	}
-// }
+func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	// Get token from Authorization header
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		utils.ResponseBadRequest(w, http.StatusUnauthorized, "missing authorization header", nil)
+		return
+	}
 
-// func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
-// 	// cookie
-// 	http.SetCookie(w, &http.Cookie{
-// 		Name:     "session",
-// 		Value:    "",
-// 		Path:     "/",
-// 		MaxAge:   -1,
-// 		HttpOnly: true,
-// 	})
-// 	http.Redirect(w, r, "/login", http.StatusSeeOther)
-// }
+	// Extract token from "Bearer <token>"
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		utils.ResponseBadRequest(w, http.StatusUnauthorized, "invalid authorization header format", nil)
+		return
+	}
+
+	token := parts[1]
+
+	// Logout (revoke token)
+	err := h.AuthService.AuthService.Logout(token)
+	if err != nil {
+		utils.ResponseBadRequest(w, http.StatusInternalServerError, err.Error(), nil)
+		return
+	}
+
+	utils.ResponseSuccess(w, http.StatusOK, "logout success", nil)
+}

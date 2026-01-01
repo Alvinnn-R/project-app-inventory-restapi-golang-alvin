@@ -10,6 +10,7 @@ type Repository struct {
 	AssignmentRepo       AssignmentRepository
 	SubmissionRepo       SubmissionRepo
 	UserRepo             UserRepository
+	SessionRepo          SessionRepository
 	PermissionRepository PermissionIface
 }
 
@@ -18,6 +19,7 @@ func NewRepository(db database.PgxIface, log *zap.Logger) Repository {
 		AssignmentRepo:       NewAssignmentRepository(db, log),
 		SubmissionRepo:       NewSubmissionRepo(db),
 		UserRepo:             NewUserRepository(db),
+		SessionRepo:          NewSessionRepository(db),
 		PermissionRepository: NewPermissionRepository(db),
 	}
 }

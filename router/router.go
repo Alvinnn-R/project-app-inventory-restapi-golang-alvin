@@ -41,17 +41,26 @@ func Apiv1(handler handler.Handler, mw mCostume.MiddlewareCostume) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(mw.Logging)
-	//authentication
-	r.Post("/login", handler.HandlerAuth.Login)
-	// r.Post("/logout", handler.HandlerAuth.Logout)
 
-	r.Route("/assignment", func(r chi.Router) {
-		r.Get("/", handler.AssignmentHandler.List)
-		r.Post("/", handler.AssignmentHandler.Create)
-		r.Route("/{assignment_id}", func(r chi.Router) {
-			r.Get("/", handler.AssignmentHandler.GetByID)
-			r.Put("/", handler.AssignmentHandler.Update)
-			r.Delete("/", handler.AssignmentHandler.Delete)
+	// Public routes - no authentication required
+	r.Post("/login", handler.HandlerAuth.Login)
+
+	// Protected routes - authentication required
+	r.Group(func(r chi.Router) {
+		r.Use(mw.AuthMiddleware)
+
+		// Logout endpoint
+		r.Post("/logout", handler.HandlerAuth.Logout)
+
+		// Assignment routes (example - will be replaced with inventory routes later)
+		r.Route("/assignment", func(r chi.Router) {
+			r.Get("/", handler.AssignmentHandler.List)
+			r.Post("/", handler.AssignmentHandler.Create)
+			r.Route("/{assignment_id}", func(r chi.Router) {
+				r.Get("/", handler.AssignmentHandler.GetByID)
+				r.Put("/", handler.AssignmentHandler.Update)
+				r.Delete("/", handler.AssignmentHandler.Delete)
+			})
 		})
 	})
 
