@@ -95,6 +95,8 @@ CREATE TABLE sales (
     user_id INTEGER NOT NULL,
     total_amount NUMERIC(15,2) NOT NULL CHECK (total_amount >= 0),
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMPTZ,
 
     CONSTRAINT fk_sales_user
         FOREIGN KEY (user_id)

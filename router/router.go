@@ -85,6 +85,39 @@ func Apiv1(handler handler.Handler, mw mCostume.MiddlewareCostume) *chi.Mux {
 			})
 		})
 
+		// Warehouses routes - CRUD for warehouses
+		r.Route("/warehouses", func(r chi.Router) {
+			r.Get("/", handler.WarehouseHandler.List)
+			r.Post("/", handler.WarehouseHandler.Create)
+			r.Route("/{warehouse_id}", func(r chi.Router) {
+				r.Get("/", handler.WarehouseHandler.GetByID)
+				r.Put("/", handler.WarehouseHandler.Update)
+				r.Delete("/", handler.WarehouseHandler.Delete)
+			})
+		})
+
+		// Sales routes - CRUD for sales transactions
+		r.Route("/sales", func(r chi.Router) {
+			r.Get("/", handler.SaleHandler.List)
+			r.Post("/", handler.SaleHandler.Create)
+			r.Route("/{sale_id}", func(r chi.Router) {
+				r.Get("/", handler.SaleHandler.GetByID)
+				r.Put("/", handler.SaleHandler.Update)
+				r.Delete("/", handler.SaleHandler.Delete)
+			})
+		})
+
+		// Users routes - CRUD for user management
+		r.Route("/users", func(r chi.Router) {
+			r.Get("/", handler.UserHandler.List)
+			r.Post("/", handler.UserHandler.Create)
+			r.Route("/{user_id}", func(r chi.Router) {
+				r.Get("/", handler.UserHandler.GetByID)
+				r.Put("/", handler.UserHandler.Update)
+				r.Delete("/", handler.UserHandler.Delete)
+			})
+		})
+
 		// Assignment routes (example - will be replaced with inventory routes later)
 		r.Route("/assignment", func(r chi.Router) {
 			r.Get("/", handler.AssignmentHandler.List)

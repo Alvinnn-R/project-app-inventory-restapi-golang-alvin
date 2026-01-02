@@ -49,12 +49,12 @@ INSERT INTO items (sku, name, category_id, rack_id, stock, minimum_stock, price,
 ('CLO-001', 'Work Uniform Shirt', 5, 5, 100, 20, 125000.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Insert Sales (5 sales transactions)
-INSERT INTO sales (user_id, total_amount, created_at) VALUES
-(3, 9000000.00, '2025-12-01 10:30:00+07'),
-(3, 1750000.00, '2025-12-02 14:15:00+07'),
-(3, 3335000.00, '2025-12-05 09:45:00+07'),
-(2, 500000.00, '2025-12-10 16:20:00+07'),
-(2, 1000000.00, '2025-12-15 11:00:00+07');
+INSERT INTO sales (user_id, total_amount, created_at, updated_at) VALUES
+(3, 9000000.00, '2025-12-01 10:30:00+07', '2025-12-01 10:30:00+07'),
+(3, 1750000.00, '2025-12-02 14:15:00+07', '2025-12-02 14:15:00+07'),
+(3, 3335000.00, '2025-12-05 09:45:00+07', '2025-12-05 09:45:00+07'),
+(2, 500000.00, '2025-12-10 16:20:00+07', '2025-12-10 16:20:00+07'),
+(2, 1000000.00, '2025-12-15 11:00:00+07', '2025-12-15 11:00:00+07');
 
 -- Insert Sale Items (detailed items for each sale)
 INSERT INTO sale_items (sale_id, item_id, quantity, price_at_sale, subtotal) VALUES
