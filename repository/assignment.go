@@ -2,11 +2,11 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"project-app-inventory/database"
 	"project-app-inventory/model"
 
+	"github.com/jackc/pgx/v5"
 	"go.uber.org/zap"
 )
 
@@ -47,7 +47,7 @@ func (r *assignmentRepository) FindByID(id int) (*model.Assignment, error) {
 		&a.ID, &a.CreatedAt, &a.UpdatedAt, &a.DeletedAt,
 		&a.CourseID, &a.LecturerID, &a.Title, &a.Description, &a.Deadline,
 	)
-	if err == sql.ErrNoRows {
+	if err == pgx.ErrNoRows {
 		return nil, nil
 	}
 	return &a, err

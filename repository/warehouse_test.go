@@ -163,3 +163,97 @@ func TestWarehouseRepository_Delete_Error(t *testing.T) {
 
 	require.NoError(t, mockDB.ExpectationsWereMet())
 }
+
+// TestWarehouseRepository_FindByName_Success tests finding warehouse by name
+func TestWarehouseRepository_FindByName_Success(t *testing.T) {
+	mockDB, err := pgxmock.NewPool()
+	require.NoError(t, err)
+	defer mockDB.Close()
+
+	repo := NewWarehouseRepository(mockDB, zap.NewNop())
+
+	mockDB.
+		ExpectQuery(`SELECT (.+) FROM warehouses WHERE name`).
+		WithArgs("Main Warehouse").
+		WillReturnRows(pgxmock.NewRows([]string{
+			"id", "name", "location", "created_at", "updated_at",
+		}).AddRow(1, "Main Warehouse", "Jakarta", time.Now(), time.Now()))
+
+	warehouse, err := repo.FindByName("Main Warehouse")
+
+	require.NoError(t, err)
+	require.NotNil(t, warehouse)
+	require.Equal(t, "Main Warehouse", warehouse.Name)
+	require.NoError(t, mockDB.ExpectationsWereMet())
+}
+
+// TestWarehouseRepository_FindByName_NotFound tests warehouse not found by name
+func TestWarehouseRepository_FindByName_NotFound(t *testing.T) {
+	mockDB, err := pgxmock.NewPool()
+	require.NoError(t, err)
+	defer mockDB.Close()
+
+	repo := NewWarehouseRepository(mockDB, zap.NewNop())
+
+	mockDB.
+		ExpectQuery(`SELECT (.+) FROM warehouses WHERE name`).
+		WithArgs("NonExistent").
+		WillReturnRows(pgxmock.NewRows([]string{"id", "name", "location", "created_at", "updated_at"}))
+
+	warehouse, err := repo.FindByName("NonExistent")
+
+	require.NoError(t, err)
+	require.Nil(t, warehouse)
+	require.NoError(t, mockDB.ExpectationsWereMet())
+}
+
+// TestWarehouseRepository_FindAll_Success tests finding all warehouses
+func TestWarehouseRepository_FindAll_Success(t *testing.T) {
+	mockDB, err := pgxmock.NewPool()
+	require.NoError(t, err)
+	defer mockDB.Close()
+
+	repo := NewWarehouseRepository(mockDB, zap.NewNop())
+
+	rows := pgxmock.NewRows([]string{
+		"id", "name", "location", "created_at", "updated_at",
+	}).
+		AddRow(1, "Warehouse 1", "Jakarta", time.Now(), time.Now()).
+		AddRow(2, "Warehouse 2", "Bandung", time.Now(), time.Now())
+
+	mockDB.
+		ExpectQuery(`SELECT COUNT`).
+		WillReturnRows(pgxmock.NewRows([]string{"count"}).AddRow(2))
+
+	mockDB.
+		ExpectQuery(`SELECT (.+) FROM warehouses ORDER BY`).
+		WithArgs(10, 0).
+		WillReturnRows(rows)
+
+	warehouses, total, err := repo.FindAll(1, 10)
+
+	require.NoError(t, err)
+	require.Equal(t, 2, len(warehouses))
+	require.Equal(t, 2, total)
+	require.NoError(t, mockDB.ExpectationsWereMet())
+}
+
+// TestWarehouseRepository_FindAll_Error tests error handling
+func TestWarehouseRepository_FindAll_Error(t *testing.T) {
+	mockDB, err := pgxmock.NewPool()
+	require.NoError(t, err)
+	defer mockDB.Close()
+
+	repo := NewWarehouseRepository(mockDB, zap.NewNop())
+
+	mockDB.
+		ExpectQuery(`SELECT COUNT`).
+		WillReturnError(errors.New("db error"))
+
+	warehouses, total, err := repo.FindAll(1, 10)
+
+	require.Error(t, err)
+	require.Equal(t, 0, len(warehouses))
+	require.Equal(t, 0, total)
+	require.NoError(t, mockDB.ExpectationsWereMet())
+}

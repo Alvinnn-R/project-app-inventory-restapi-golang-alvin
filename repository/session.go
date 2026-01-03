@@ -2,9 +2,10 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	"project-app-inventory/database"
 	"project-app-inventory/model"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type SessionRepository interface {
@@ -42,7 +43,7 @@ func (r *sessionRepositoryImpl) FindByToken(token string) (*model.Session, error
 		&session.ID, &session.UserID, &session.Token, &session.ExpiredAt, &session.RevokedAt, &session.CreatedAt,
 	)
 
-	if err == sql.ErrNoRows {
+	if err == pgx.ErrNoRows {
 		return nil, nil // session tidak ditemukan atau sudah expired/revoked
 	}
 
