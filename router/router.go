@@ -20,17 +20,6 @@ func NewRouter(handler handler.Handler, service service.Service, log *zap.Logger
 	r.Mount("/api/v1", Apiv1(handler, mw))
 	r.Mount("/api/v2", Apiv2(handler))
 
-	// //menu
-	// r.Route("/user", func(r chi.Router) {
-	// 	r.Use(middleware.AuthMiddleware)
-	// 	r.Get("/assignments", handler.AssignmentHandler.List)
-	// 	r.Get("/success-submit", handler.AssignmentHandler.SuccessSubmit)
-	// 	r.Post("/submit-assignment", handler.AssignmentHandler.SubmitAssignment)
-	// 	r.Get("/grade", handler.HandlerMenu.GradeView)
-	// 	r.Get("/logout", handler.HandlerAuth.LogoutView)
-	// })
-	// r.Get("/page401", handler.HandlerMenu.PageUnauthorized)
-
 	fs := http.FileServer(http.Dir("public"))
 	r.Handle("/public/*", http.StripPrefix("/public/", fs))
 
@@ -116,6 +105,11 @@ func Apiv1(handler handler.Handler, mw mCostume.MiddlewareCostume) *chi.Mux {
 				r.Put("/", handler.UserHandler.Update)
 				r.Delete("/", handler.UserHandler.Delete)
 			})
+		})
+
+		// Reports routes - Summary reports for inventory system
+		r.Route("/reports", func(r chi.Router) {
+			r.Get("/summary", handler.ReportHandler.GetSummary)
 		})
 
 		// Assignment routes (example - will be replaced with inventory routes later)
