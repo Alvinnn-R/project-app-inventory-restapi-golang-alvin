@@ -15,6 +15,7 @@ type ItemRepository interface {
 	FindByID(id int) (*model.Item, error)
 	FindBySKU(sku string) (*model.Item, error)
 	FindAll(page, limit int) ([]model.Item, int, error)
+	FindLowStock(page, limit int) ([]model.Item, int, error)
 	Update(id int, data *model.Item) error
 	Delete(id int) error
 }
@@ -130,6 +131,51 @@ func (r *itemRepository) FindAll(page, limit int) ([]model.Item, int, error) {
 		)
 		if err != nil {
 			r.Logger.Error("error scanning item", zap.Error(err))
+			return nil, 0, err
+		}
+		items = append(items, item)
+	}
+
+	return items, total, nil
+}
+
+func (r *itemRepository) FindLowStock(page, limit int) ([]model.Item, int, error) {
+	offset := (page - 1) * limit
+
+	// Get total count of low stock items
+	var total int
+	countQuery := `SELECT COUNT(*) FROM items WHERE stock < minimum_stock`
+	err := r.db.QueryRow(context.Background(), countQuery).Scan(&total)
+	if err != nil {
+		r.Logger.Error("error counting low stock items", zap.Error(err))
+		return nil, 0, err
+	}
+
+	// Get data with pagination
+	query := `
+		SELECT id, sku, name, category_id, rack_id, stock, minimum_stock, price, created_at, updated_at
+		FROM items
+		WHERE stock < minimum_stock
+		ORDER BY stock ASC, name ASC
+		LIMIT $1 OFFSET $2
+	`
+	rows, err := r.db.Query(context.Background(), query, limit, offset)
+	if err != nil {
+		r.Logger.Error("error querying low stock items", zap.Error(err))
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var items []model.Item
+	for rows.Next() {
+		var item model.Item
+		err := rows.Scan(
+			&item.ID, &item.SKU, &item.Name, &item.CategoryID, &item.RackID,
+			&item.Stock, &item.MinimumStock, &item.Price,
+			&item.CreatedAt, &item.UpdatedAt,
+		)
+		if err != nil {
+			r.Logger.Error("error scanning low stock item", zap.Error(err))
 			return nil, 0, err
 		}
 		items = append(items, item)

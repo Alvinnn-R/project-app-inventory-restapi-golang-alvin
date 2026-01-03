@@ -11,6 +11,7 @@ import (
 type ItemService interface {
 	Create(item *model.Item) error
 	GetAllItems(page, limit int) (*[]model.Item, *dto.Pagination, error)
+	GetLowStockItems(page, limit int) (*[]model.Item, *dto.Pagination, error)
 	GetItemByID(id int) (*model.Item, error)
 	Update(id int, data *model.Item) error
 	Delete(id int) error
@@ -39,6 +40,21 @@ func (s *itemService) Create(item *model.Item) error {
 
 func (s *itemService) GetAllItems(page, limit int) (*[]model.Item, *dto.Pagination, error) {
 	items, total, err := s.Repo.ItemRepo.FindAll(page, limit)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	pagination := dto.Pagination{
+		CurrentPage:  page,
+		Limit:        limit,
+		TotalPages:   utils.TotalPage(limit, int64(total)),
+		TotalRecords: total,
+	}
+	return &items, &pagination, nil
+}
+
+func (s *itemService) GetLowStockItems(page, limit int) (*[]model.Item, *dto.Pagination, error) {
+	items, total, err := s.Repo.ItemRepo.FindLowStock(page, limit)
 	if err != nil {
 		return nil, nil, err
 	}

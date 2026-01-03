@@ -78,6 +78,24 @@ func (h *ItemHandler) List(w http.ResponseWriter, r *http.Request) {
 	utils.ResponsePagination(w, http.StatusOK, "success get data", items, *pagination)
 }
 
+func (h *ItemHandler) GetLowStock(w http.ResponseWriter, r *http.Request) {
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+
+	limit := h.Config.Limit
+
+	// Get low stock items from service
+	items, pagination, err := h.ItemService.GetLowStockItems(page, limit)
+	if err != nil {
+		utils.ResponseBadRequest(w, http.StatusInternalServerError, "failed to fetch low stock items: "+err.Error(), nil)
+		return
+	}
+
+	utils.ResponsePagination(w, http.StatusOK, "success get low stock items", items, *pagination)
+}
+
 func (h *ItemHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	itemIDstr := chi.URLParam(r, "item_id")
 
