@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"project-app-inventory/model"
 	"project-app-inventory/utils"
 	"strings"
 )
@@ -51,15 +52,12 @@ func (mw *MiddlewareCostume) RoleMiddleware(allowedRoles ...string) func(http.Ha
 			}
 
 			// Check if user role is in allowed roles
-			userRole := user.(*struct {
-				ID           int
-				Name         string
-				Email        string
-				PasswordHash string
-				RoleID       int
-				RoleName     string
-				IsActive     bool
-			}).RoleName
+			userModel, ok := user.(*model.User)
+			if !ok {
+				utils.ResponseBadRequest(w, http.StatusInternalServerError, "invalid user data", nil)
+				return
+			}
+			userRole := userModel.RoleName
 
 			allowed := false
 			for _, role := range allowedRoles {
