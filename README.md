@@ -122,13 +122,6 @@ project-app-inventory-restapi-golang-alvin/
 └── go.sum                 # Dependencies
 ```
 
-## Prerequisites
-
-- Go 1.21+
-- PostgreSQL 13+
-- Git
-- Postman (untuk testing API)
-
 ## API Endpoints
 
 ### Auth Endpoints
@@ -206,24 +199,6 @@ project-app-inventory-restapi-golang-alvin/
 | GET    | `/api/v1/reports/summary` | Get summary report | Super Admin, Admin |
 
 ---
-
-## Database Schema
-
-### Tables
-
-- **roles** - User roles (super_admin, admin, staff)
-- **users** - User accounts dengan role
-- **sessions** - Session management dengan token
-- **categories** - Kategori barang
-- **warehouses** - Lokasi gudang
-- **racks** - Rak penyimpanan (relasi ke warehouse)
-- **items** - Data barang (relasi ke category & rack)
-- **sales** - Transaksi penjualan
-- **sale_items** - Detail item dalam penjualan
-
-### ERD
-
-## Lihat file `db_file/ddl_inventory_management_system.sql` untuk schema lengkap.
 
 ## Author
 
